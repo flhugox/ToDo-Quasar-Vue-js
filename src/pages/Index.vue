@@ -1,5 +1,6 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
+    <q-input filled label="Buscar..." v-model="filtro" />
     <q-editor
       v-if="!modoEdicion"
       v-model="editor"
@@ -32,7 +33,7 @@
         ['upload', 'save']
       ]"
     />
-    <q-card class="row" flat bordered v-for="(item, index) in tasks" :key="index">
+    <q-card class="row" flat bordered v-for="(item, index) in arrayFiltradas" :key="index">
       <q-card-section :class="item.estado ? 'tachar' : ''" class="col" v-html="item.texto" />
       <q-btn flat color="blue" @click="item.estado = !item.estado">Accion</q-btn>
       <q-btn flat color="yellow" @click="editar(index, item.id)">Editar</q-btn>
@@ -53,11 +54,29 @@ export default {
       tasks: [],
       index: null,
       modoEdicion: false,
-      id: null
+      id: null,
+      arrayFiltradas: [],
+      texto: ""
     };
+  },
+  computed: {
+    filtro: {
+      get() {
+        return this.texto;
+      },
+      set(value) {
+        console.log("filtro ejecutado!");
+        value = value.toLowerCase();
+        this.arrayFiltradas = this.tasks.filter(
+          item => item.texto.toLowerCase().indexOf(value) !== -1
+        );
+        this.texto = value;
+      }
+    }
   },
   created() {
     this.listarTares();
+    this.arrayFiltradas = this.tasks;
   },
   methods: {
     async listarTares() {
